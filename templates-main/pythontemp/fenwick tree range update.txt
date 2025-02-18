@@ -1,0 +1,58 @@
+from sys import stdin
+input = stdin.readline
+
+class fenwicktree:
+    
+    def __init__(self , n):
+        self.BITTree1 = [0] * (n + 1)
+        self.BITTree2 = [0] * (n + 1)
+        self.size = n
+
+    def getSum(self , BITTree , index):
+        summ = 0
+ 
+        index = index + 1
+ 
+        while index > 0:
+ 
+            summ += BITTree[index]
+ 
+            index -= index & (-index)
+
+        return summ
+ 
+    def updateBit(self , BITTree , n , index , val):
+    
+        index = index + 1
+ 
+        while index <= n:
+ 
+            BITTree[index] += val
+ 
+            index += index & (-index)
+ 
+ 
+    def summation(self , x , BITTree1 , BITTree2):
+        return (self.getSum(BITTree1, x) * x) - self.getSum(BITTree2, x)
+ 
+ 
+    def updaterange(self , l , r , val):
+
+        self.updateBit(self.BITTree1 , self.size , l, val)
+        self.updateBit(self.BITTree1 , self.size , r + 1, -val)
+ 
+        self.updateBit(self.BITTree2 , self.size , l , val * (l - 1))
+        self.updateBit(self.BITTree2 , self.size , r + 1 , -val * r)
+ 
+    def rangesum(self , l , r):
+ 
+        return self.summation(r, self.BITTree1, self.BITTree2) - self.summation(l - 1, self.BITTree1, self.BITTree2)
+
+
+def answer():
+
+ 
+ 
+for T in range(int(input())):
+ 
+    print(answer())

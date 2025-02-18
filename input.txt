@@ -1,0 +1,61 @@
+# author: ankan2526
+ 
+import sys,math,heapq,bisect,random,itertools
+input = sys.stdin.readline
+sys.setrecursionlimit(10**5)
+ 
+ints = lambda : list(map(int,input().split()))
+def gprint(ans=''):global t;print(f"Case #{t+1}:",ans)
+p = 10**9+7
+inf = 10**20+7
+adj = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+alpha = "abcdefghijklmnopqrstuvwxyz"
+ANS = []
+
+
+
+'''
+'''
+
+
+
+for t in range(int(input())):
+    print(0, flush=True)
+    summ = int(input())
+    
+    x, y, q = 0, 0, 0
+    seg = []
+    prev = 0
+    for i in range(33):
+        if summ & (1<<i):
+            x += (1<<i)
+        else:
+            start = i
+            break
+    for i in range(start, 33):
+        if summ & (1<<i):
+            if prev == 0:
+                q += (1<<(i-1))
+            prev += (1<<i)
+        else:
+            if prev:
+                seg.append(prev)
+                prev = 0
+
+    print(q, flush=True)
+
+    v = int(input())
+    for s in seg:
+        if v & s == s:
+            x += (s // 2)
+            y += (s // 2)
+        else:
+            x += s
+    
+    print('!', flush=True)
+    m = int(input())
+
+    print(x, y)
+
+    print((m | x) + (m | y), flush=True)

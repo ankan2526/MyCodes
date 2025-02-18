@@ -1,0 +1,115 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fastio ios_base::sync_with_stdio(false);cin.tie(NULL);
+typedef int ll;
+
+class segtree{
+    
+    public:
+    vector<ll> st , lazy;
+    ll size;
+
+    segtree(ll n){
+
+        st.assign(4 * n , 0);
+        lazy.assign(4 * n , 0);
+        size = n - 1;
+    }
+
+    ll construct(vector<ll> &a ,ll l = 0 ,ll h = -1 ,ll i = 0){
+        if(h == -1) h = this->size;
+
+        if(l > h) return 0;
+
+        if(l == h){
+            this->st[i] = a[l];
+            return this->st[i];
+        }
+
+        ll mid = (l + h)/2;
+
+        ll left = this->construct(a , l ,mid , 2*i + 1);
+        ll right = this->construct(a , mid + 1 , h , 2*i + 2);
+
+        this->st[i] = left + right;
+        return this->st[i];
+    }
+    
+
+    ll update(ll x ,ll y ,ll value ,ll l = 0,ll h = -1,ll i = 0){
+        if(h == -1)
+            h = this->size;
+
+        if(l >= x && h <= y) this->lazy[i] += value;
+
+        if(this->lazy[i]){
+ 
+            this->st[i] += (h - l + 1) * this->lazy[i];
+
+            if(l != h){
+                 this->lazy[2*i + 1] += this->lazy[i];
+                 this->lazy[2*i + 2] += this->lazy[i];
+            }
+
+            this->lazy[i] = 0;
+        }
+
+        if(l >= x && h <= y) return this->st[i];
+    
+        if(l > y || h < x) return this->st[i];
+
+
+        ll mid = (l + h)/2;
+
+        ll left = this->update(x , y , value ,l , mid, 2*i + 1);
+        ll right = this->update(x , y , value ,mid + 1 , h , 2*i + 2);
+
+        this->st[i] = left + right;
+        return left + right;
+    }
+
+
+    ll query(ll x ,ll y ,ll l = 0 ,ll h = -1 ,ll i = 0){
+        if(h == -1)
+            h = this->size;
+
+        if(this->lazy[i]){
+            this->st[i] += (h - l + 1) * this->lazy[i];
+
+            if(l != h){
+                this->lazy[2*i + 1] += this->lazy[i];
+                this->lazy[2*i + 2] += this->lazy[i];
+            }
+
+            this->lazy[i] = 0;
+        }
+
+        if(l >= x && h <= y) return this->st[i];
+
+        if(l > y || h < x) return 0;
+   
+        ll mid = (l + h)/2;
+
+        ll left = this->query(x , y ,l , mid , 2*i + 1);
+        ll right = this->query(x,  y , mid + 1 , h , 2*i + 2);
+
+        return left + right;
+    }
+};
+
+void answer(){
+
+
+
+}
+ 
+int main() {
+    fastio;
+    
+    int T = 1;
+    for (int t = 1;t <= T;++t){
+        answer();
+    }
+ 
+	return 0;
+}

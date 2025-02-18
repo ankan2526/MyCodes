@@ -1,0 +1,76 @@
+def get_p2(n):
+    p = 1
+    while p < n:
+        p *= 2
+    return p
+
+
+def get_sum(a, d, n):
+    return n*(2*a + (n-1)*d)//2
+
+
+class SegTree:
+    def __init__(self, n):
+        self.n = n
+        self.summ = 0
+        self.lazy_a = 0
+        self.lazy_d = 0
+        
+        if self.n != 1:
+            self.left = SegTree(n//2)
+            self.right = SegTree(n//2)
+    
+
+    def update(self, l, r, a, d):
+        if l == 0 and r == self.n-1:
+            self.lazy_a += a
+            self.lazy_d += d
+            return
+        
+        if self.lazy_a or self.lazy_d:
+            self.summ += get_sum(self.lazy_a, self.lazy_d, self.n)
+            self.left.lazy_a += self.lazy_a
+            self.left.lazy_d += self.lazy_d
+            self.right.lazy_a += self.lazy_a + self.lazy_d*(self.n//2)
+            self.right.lazy_d += self.lazy_d
+            self.lazy_a = self.lazy_d = 0
+        
+        self.summ += get_sum(a, d, r-l+1)
+        
+        if r < self.n//2:
+            self.left.update(l, r, a, d)
+        elif l > self.n//2-1:
+            self.right.update(l-self.n//2, r-self.n//2, a, d)
+        else:
+            self.left.update(l, self.n//2-1, a, d)
+            a1 = a + d * (self.n//2 - l)
+            self.right.update(0, r-self.n//2, a1, d)
+        
+    
+    def query(self, l, r):
+        if l == 0 and r == self.n-1:
+            if self.lazy_a or self.lazy_d:
+                self.summ += get_sum(self.lazy_a, self.lazy_d, self.n)
+                if self.n != 1:
+                    self.left.lazy_a += self.lazy_a
+                    self.left.lazy_d += self.lazy_d
+                    self.right.lazy_a += self.lazy_a + self.lazy_d*(self.n//2)
+                    self.right.lazy_d += self.lazy_d
+                
+                self.lazy_a = self.lazy_d = 0
+            return self.summ
+        
+        if self.lazy_a or self.lazy_d:
+            self.summ += get_sum(self.lazy_a, self.lazy_d, self.n)
+            self.left.lazy_a += self.lazy_a
+            self.left.lazy_d += self.lazy_d
+            self.right.lazy_a += self.lazy_a + self.lazy_d*(self.n//2)
+            self.right.lazy_d += self.lazy_d
+            self.lazy_a = self.lazy_d = 0
+        
+        if r < self.n//2:
+            return self.left.query(l, r)
+        elif l > self.n//2-1:
+            return self.right.query(l-self.n//2, r-self.n//2)
+        else:
+            return self.left.query(l, self.n//2-1) + self.right.query(0, r-self.n//2)

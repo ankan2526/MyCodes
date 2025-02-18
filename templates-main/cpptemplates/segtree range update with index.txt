@@ -1,0 +1,114 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fastio ios_base::sync_with_stdio(false);cin.tie(NULL);
+typedef int ll;
+
+class segtree{
+    
+    public:
+    vector<ll> lazy;
+    vector<pair<ll , ll>> st;
+    ll size;
+    
+    segtree(ll n){
+ 
+        st.assign(4 * n , {0 , -1});
+        lazy.assign(4 * n , 0);
+        size = n - 1;
+    }
+ 
+    pair<ll , ll> update(ll x ,ll y ,ll value ,ll l = 0,ll h = -1,ll i = 0){
+        if(h == -1)
+            h = this->size;
+ 
+        if(l >= x && h <= y) this->lazy[i] += value;
+ 
+        if(this->lazy[i]){
+ 
+            this->st[i].first += this->lazy[i];
+            this->st[i].first = min(Inf , this->st[i].first);
+ 
+            if(l != h){
+                 this->lazy[2*i + 1] += this->lazy[i];
+                 this->lazy[2*i + 2] += this->lazy[i];
+            }
+ 
+            this->lazy[i] = 0;
+        }
+        
+        if(l == h)
+        this->st[i].second = l;
+ 
+        if(l >= x && h <= y) return this->st[i];
+    
+        if(l > y || h < x) return this->st[i];
+ 
+        ll mid = (l + h)/2;
+ 
+        pair<ll , ll> left = this->update(x , y , value ,l , mid, 2*i + 1);
+        pair<ll , ll> right = this->update(x , y , value ,mid + 1 , h , 2*i + 2);
+        
+        if(left.first < right.first)
+            this->st[i] = left;
+        else if(left.first > right.first)
+            this->st[i] = right;
+        else{
+            if(left.second > right.second)
+            this->st[i] = left;
+            else
+            this->st[i] = right;
+        }
+        
+        return this->st[i];
+    }
+ 
+    pair<ll , ll> query(ll x ,ll y ,ll l = 0 ,ll h = -1 ,ll i = 0){
+        if(h == -1)
+            h = this->size;
+ 
+        if(this->lazy[i]){
+            this->st[i].first += this->lazy[i];
+            this->st[i].first = min(Inf , this->st[i].first);
+ 
+            if(l != h){
+                this->lazy[2*i + 1] += this->lazy[i];
+                this->lazy[2*i + 2] += this->lazy[i];
+            }
+ 
+            this->lazy[i] = 0;
+        }
+ 
+        if(l >= x && h <= y) return this->st[i];
+ 
+        if(l > y || h < x) return {Inf , Inf};
+   
+        ll mid = (l + h)/2;
+ 
+        pair<ll , ll> left = this->query(x , y ,l , mid , 2*i + 1);
+        pair<ll , ll> right = this->query(x,  y , mid + 1 , h , 2*i + 2);
+ 
+        if(left.first < right.first) return left;
+        else if(right.first < left.first) return right;
+        else{
+            if(left.second > right.second) return left;
+            else return right;
+        }
+    }
+};
+
+
+void answer(){
+
+
+}
+ 
+int main() {
+    fastio;
+    
+    int T = 1;
+    for (int t = 1;t <= T;++t){
+        answer();
+    }
+ 
+	return 0;
+}

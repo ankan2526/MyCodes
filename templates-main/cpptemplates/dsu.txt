@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fastio ios_base::sync_with_stdio(false);cin.tie(NULL);
+typedef int ll;
+
+class dsu{
+    
+    public:
+    vector<ll> p , rank;
+    
+    dsu(ll n){
+        
+        p.assign(n + 1 , 0);
+        rank.assign(n + 1 , 0);
+        
+        for (ll i = 1;i <= n;++i)
+        p[i] = i;
+    }
+    
+    ll find(ll node){
+        if(this->p[node] == node) return node;
+ 
+        this->p[node] = this->find(this->p[node]);
+        return this->p[node];
+    }
+    
+    void merge(ll u , ll v){
+        u = this->find(u);
+        v = this->find(v);
+ 
+        if(this->rank[u] == this->rank[v]){
+            this->p[v] = u;
+            this->rank[u] += 1;
+        }
+ 
+        else if(this->rank[u] > this->rank[v])
+            this->p[v] = u;
+ 
+        else
+            this->p[u] = v;
+    }
+    
+};
+
+void answer(){
+
+
+}
+ 
+int main() {
+    fastio;
+    
+    int T = 1;
+    for (int t = 1;t <= T;++t){
+        answer();
+    }
+ 
+	return 0;
+}

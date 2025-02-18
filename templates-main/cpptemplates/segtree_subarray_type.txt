@@ -1,0 +1,120 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define fastio ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define mod 1000000007
+#define pb push_back
+#define Inf 10000000000000000LL
+typedef int ll;
+
+class segtree{
+    
+    public:
+    vector<vector<ll>> st;
+    ll size;
+ 
+    segtree(ll n){
+        st.assign(4 * n , vector<ll>(3 , 0));
+        size = n - 1;
+    }
+ 
+    void update(ll x ,ll l = 0 ,ll h = -1 ,ll i = 0){
+        if(h == -1) h = this->size;
+   
+        if(l > h || l > x || h < x) return;
+ 
+        if(l == h){
+            if(l == x){
+                this->st[i][0] = 1;
+                this->st[i][1] = 1;
+                this->st[i][2] = 1;
+            }
+            return;
+        } 
+    
+        ll mid = (l + h)/2;
+ 
+        this->update(x , l , mid , 2*i + 1);
+        this->update(x , mid + 1 , h , 2*i + 2);
+        
+    
+        ll prefix_count = this->st[2 * i + 1][1]; 
+        ll suffix_count = this->st[2 * i + 2][2];
+        
+        //total
+        this->st[i][0] = max(this->st[2 * i + 1][0] , this->st[2 * i + 2][0]);
+        if(mid + 1 < n && (a[mid] - a[mid + 1]) == -1)
+        this->st[i][0] = max(this->st[i][0] , this->st[2 * i + 1][2] + this->st[2 * i + 2][1]);
+        
+        //prefix 
+        if(prefix_count == (mid - l + 1) && mid + 1 < n && (a[mid] - a[mid + 1]) == -1)
+            this->st[i][1] = prefix_count + this->st[2 * i + 2][1];
+        else
+            this->st[i][1] = prefix_count;
+ 
+        //suffix
+        if(suffix_count == (h - mid) && mid + 1 < n && (a[mid] - a[mid + 1]) == -1)
+            this->st[i][2] = suffix_count + this->st[2 * i + 1][2];
+        else
+            this->st[i][2] = suffix_count;
+        
+    }
+ 
+    vector<ll> query(ll x ,ll y ,ll l = 0 ,ll h = -1 ,ll i = 0){
+        if(h == -1) h = this->size;
+    
+        if(l > y || h < x) return {-1};
+ 
+        if(l >= x && h <= y) return {this->st[i][0] , this->st[i][1] , this->st[i][2] , l , h};
+ 
+        if(l == h) return {-1};
+ 
+        ll mid = (l + h)/2;
+ 
+        vector<ll> left = this->query(x , y , l , mid , 2*i + 1);
+        vector<ll> right = this->query(x , y , mid + 1 , h , 2*i + 2);
+        
+        if(left[0] == -1) return right;
+        else if(right[0] == -1) return left;
+        else{
+            
+            ll ans , prefix_count , suffix_count;
+            
+            ans = max(right[0] , left[0]);
+            
+            if(a[left[4]] - a[right[3]] == -1)
+            ans = max(ans , left[2] + right[1]);
+ 
+            if(left[1] == (left[4] - left[3] + 1) && (a[left[4]] - a[right[3]]) == -1)
+                prefix_count = left[1] + right[1];
+            else
+                prefix_count = left[1];
+ 
+ 
+            if(right[2] == (right[4] - right[3] + 1) && (a[left[4]] - a[right[3]]) == -1)
+                suffix_count = left[2] + right[2];
+            else
+                suffix_count = right[2];
+            
+            return {ans , prefix_count , suffix_count , left[3] , right[4]};
+        }
+    }
+};
+
+void answer(){
+    
+    
+}
+
+
+int main() {
+    fastio;
+    
+    int T = 1;
+    for (int t = 1;t <= T;++t){
+        //cout << "Case #" << t << ": ";
+        answer();
+    }
+    
+ 
+	return 0;
+}

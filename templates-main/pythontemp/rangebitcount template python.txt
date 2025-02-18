@@ -1,0 +1,28 @@
+from sys import stdin
+input = stdin.readline
+
+
+def bitcount(n , bit , mbit):
+    istheir=False
+
+    ans = 0
+    for i in range(mbit,-1,-1):
+        if(not istheir and i < bit):break
+
+        if((n >> i) & 1):
+
+            if(i > bit):ans += (1 << i-1)
+            elif(i < bit):ans += (1 << i)
+            else:
+                istheir=True
+                ans += 1
+    return ans
+
+def answer():
+
+
+
+
+for T in range(int(input())):
+
+    print(answer())

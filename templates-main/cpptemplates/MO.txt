@@ -1,0 +1,25 @@
+const int B=500;
+const int N = 200005;
+
+struct Query
+{
+    int l,r,id;
+};
+Query Q[N];
+ 
+void add(int x){
+    
+}
+
+void del(int x){
+    
+}
+
+void sortQ(int m){
+    sort(Q,Q+m,[&](Query &a,Query &b)
+    {
+        if(a.l/B == b.l/B)
+            return a.r<b.r;
+        return a.l/B<b.l/B;
+    });
+}

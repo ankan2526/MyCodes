@@ -1,0 +1,82 @@
+// author: ankan2526 //
+#include<bits/stdc++.h>
+using namespace std;
+#define ll long long
+#define mem(a,b) memset(a,b,sizeof(a));
+ 
+const int MAX_N = 1e5 + 5;
+const int MOD = 1e9 + 7;
+const int INF = 1e9;
+const ll LINF = 1e18;
+ 
+vector<int> tree[300000];
+int parent[300000][25];
+int level[300000];
+ 
+ 
+void dfs(int node,int lvl, int prev){
+    level[node] = lvl;
+    parent[node][0] = prev;
+    for(int i=1;i<=21;i++){
+        if(parent[node][i-1]!=-1){
+            parent[node][i] = parent[parent[node][i-1]][i-1];
+        }
+    }
+    
+    for(auto i:tree[node]){
+        if(i!=prev){
+            dfs(i,lvl+1,node);
+        }
+    }
+}
+ 
+int up(int node,int k){
+    for(int i=0;i<=21;i++){
+        if(k&(1<<i)){
+            node = parent[node][i];
+        }
+    }
+    return node;
+}
+ 
+int lca(int u,int v){
+ 
+    if(level[u] > level[v]){
+        swap(u,v);
+    }
+ 
+    int dist=level[v] - level[u];
+    for(int i=20;i>=0;i--){
+        if(dist >> i & 1)
+            v=parent[v][i];
+    }
+ 
+    if(u==v) return u;
+    for(int i=20;i>=0;i--){
+        if(parent[u][i] != parent[v][i]){
+            u=parent[u][i];
+            v=parent[v][i];
+        }
+    }
+    return parent[u][0];
+}
+ 
+int main(){
+    ios_base::sync_with_stdio(false);cin.tie(NULL);cout.tie(NULL);
+    int n,q; cin>>n>>q;
+    for(int i=2;i<=n;i++){
+        int x; cin>>x;
+        tree[x].push_back(i);
+    }
+    mem(parent,-1);
+    mem(level,-1);
+    
+    dfs(1,0,-1);
+    
+    while(q--){
+        int x,y; cin>>x>>y;
+        cout << lca(x,y) << endl;
+    }
+    
+    return 0;
+}

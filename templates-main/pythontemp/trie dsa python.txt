@@ -1,0 +1,39 @@
+from sys import stdin
+input = stdin.readline
+
+class trie:
+
+    def __init__(self):
+
+        self.child = []
+        self.data = None
+
+    
+    def insert(self , value):
+
+        self.child.append(trie())
+        self.child[-1].data = value
+
+    
+    def make(self , value):
+
+        for x in self.child:
+
+            if(x.data == value):
+                return x
+
+        self.insert(value)
+        return self.child[-1]
+
+    def check(self , value):
+
+        for x in self.child:
+
+            if(x.data == value):
+                return x
+
+        return None
+
+for T in range(int(input())):
+
+    print(answer())

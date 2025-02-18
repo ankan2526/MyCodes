@@ -1,0 +1,54 @@
+from sys import stdin
+input = stdin.readline
+
+
+class segtree:
+
+    def __init__(self , n):
+
+        self.st = [0] * (4 * n)
+        self.size = n - 1
+ 
+ 
+    def update(self , x , value , l = 0 , h = -1 , i = 0):
+        if(h == -1):h = self.size
+   
+        if(l > h or l > x or h < x):return
+ 
+        if(l == h):
+            if(l == x):
+                #change if required
+                self.st[i] += value
+
+            return 
+    
+        mid = (l + h)//2
+ 
+        self.update(x , value , l , mid , 2*i + 1)
+        self.update(x , value , mid + 1 , h , 2*i + 2)
+ 
+        self.st[i] = self.st[2*i + 1] + self.st[2*i + 2]
+ 
+ 
+    def query(self , x , y , l = 0 , h = -1 , i = 0):
+        if(h == -1):h = self.size
+    
+        if(l > y or h < x):return 0
+ 
+        if(l >= x and h <= y):return self.st[i]
+ 
+        if(l == h):return 0
+ 
+        mid = (l + h)//2
+ 
+        left = self.query(x , y , l , mid , 2*i + 1)
+        right = self.query(x , y , mid + 1 , h , 2*i + 2)
+ 
+        return left + right
+
+def answer():
+
+
+for T in range(int(input())):
+
+    print(answer())

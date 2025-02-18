@@ -1,0 +1,121 @@
+// Author: ankan2526
+
+#include <bits/stdc++.h>
+using namespace std;
+
+#define int long long
+#define fastio ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+
+int get_p2(int n) {
+    int p = 1;
+    while (p < n) p *= 2;
+    return p;
+}
+
+int get_sum(int a, int d, int n) {
+    return n * (2 * a + (n - 1) * d) / 2;
+}
+
+class SegTree {
+public:
+    int n;
+    int summ = 0, lazy_a = 0, lazy_d = 0;
+    SegTree *left = nullptr, *right = nullptr;
+
+    SegTree(int size) {
+        n = size;
+        if (n != 1) {
+            left = new SegTree(n / 2);
+            right = new SegTree(n / 2);
+        }
+    }
+
+    void update(int l, int r, int a, int d) {
+        if (l == 0 && r == n - 1) {
+            lazy_a += a;
+            lazy_d += d;
+            return;
+        }
+
+        propagate();
+
+        summ += get_sum(a, d, r - l + 1);
+
+        if (r < n / 2) {
+            left->update(l, r, a, d);
+        } else if (l > n / 2 - 1) {
+            right->update(l - n / 2, r - n / 2, a, d);
+        } else {
+            left->update(l, n / 2 - 1, a, d);
+            int a1 = a + d * (n / 2 - l);
+            right->update(0, r - n / 2, a1, d);
+        }
+    }
+
+    int query(int l, int r) {
+        if (l == 0 && r == n - 1) {
+            propagate();
+            return summ;
+        }
+
+        propagate();
+
+        if (r < n / 2) {
+            return left->query(l, r);
+        } else if (l > n / 2 - 1) {
+            return right->query(l - n / 2, r - n / 2);
+        } else {
+            return left->query(l, n / 2 - 1) + right->query(0, r - n / 2);
+        }
+    }
+
+private:
+    void propagate() {
+        if (lazy_a || lazy_d) {
+            summ += get_sum(lazy_a, lazy_d, n);
+            if (n != 1) {
+                left->lazy_a += lazy_a;
+                left->lazy_d += lazy_d;
+                right->lazy_a += lazy_a + lazy_d * (n / 2);
+                right->lazy_d += lazy_d;
+            }
+            lazy_a = lazy_d = 0;
+        }
+    }
+};
+
+int32_t main() {
+    fastio;
+
+    int n, m;
+    cin >> n >> m;
+
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) cin >> a[i];
+
+    int N = get_p2(n);
+    SegTree seg(N);
+
+    for (int i = 0; i < n; ++i) {
+        seg.update(i, i, a[i], 0);
+    }
+
+    vector<int> ANS;
+
+    for (int i = 0; i < m; ++i) {
+        int k, a, b;
+        cin >> k >> a >> b;
+        --a; --b;
+        if (k == 1) {
+            seg.update(a, b, 1, 1);
+        } else {
+            ANS.push_back(seg.query(a, b));
+        }
+    }
+
+    for (auto ans : ANS) {
+        cout << ans << '\n';
+    }
+
+    return 0;
+}

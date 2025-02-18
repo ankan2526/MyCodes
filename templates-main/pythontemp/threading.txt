@@ -1,0 +1,7 @@
+import threading
+
+
+
+if(__name__ == "__main__"):
+    threading.stack_size(10**8)
+    threading.Thread(target=main).start()

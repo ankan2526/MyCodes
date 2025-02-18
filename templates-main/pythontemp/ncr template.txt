@@ -1,0 +1,23 @@
+from sys import stdin
+input = stdin.readline
+
+mod = 998244353
+def add(a , b):return ((a%mod) + (b%mod))%mod
+def sub(a , b):return (a - b + mod)%mod
+def mul(a , b):return ((a%mod) * (b%mod))%mod
+def ncr(n , r):return mul(fact[n] , mul(facti[n - r] , facti[r]))
+def div(a , b):return mul(a , pow(b , mod - 2 , mod))
+
+fact , facti = [1] , [1]
+size = 2 * (10**5) + 1
+for i in range(1 , size):
+    fact.append(mul(fact[-1] , i))
+    facti.append(pow(fact[-1] , mod - 2 , mod))
+
+
+def answer():
+
+    
+for T in range(int(input())):
+    
+    print(answer())

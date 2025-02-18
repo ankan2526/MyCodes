@@ -1,0 +1,35 @@
+mod = 10**9+7
+
+def add(A,B):
+    result = [[0 for j in range(len(A[0]))] for i in range(len(A))]
+    for i in range(len(A)):
+        for j in range(len(A[0])):
+            result[i][j]=(A[i][j]+B[i][j])%mod
+    return result
+
+def sub(A,B):
+    result = [[0 for j in range(len(A[0]))] for i in range(len(A))]
+    for i in range(len(A)):
+        for j in range(len(A[0])):
+            result[i][j]=(A[i][j]-B[i][j])%mod
+    return result
+
+def mul(X,Y,m=mod):
+    result = [[0 for j in range(len(Y[0]))] for i in range(len(X))]
+    for i in range(len(X)):
+        for j in range(len(Y[0])):
+            for k in range(len(Y)):
+                result[i][j] = (result[i][j] + X[i][k] * Y[k][j])%m
+    return result
+
+def exp(A,n,m=mod):
+    res = [[0 for i in range(len(A))] for j in range(len(A))]
+    for i in range(len(A)):
+        res[i][i] = 1
+
+    while n:
+        if n%2:
+            res = mul(A,res,m)
+        A = mul(A,A,m)
+        n //= 2
+    return res

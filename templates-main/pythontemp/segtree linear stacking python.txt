@@ -1,0 +1,98 @@
+from sys import stdin,setrecursionlimit
+input = stdin.readline
+
+setrecursionlimit(10**6)
+class segtree:
+ 
+    def __init__(self , n):
+ 
+        self.st = [0]*(3 * n)
+        self.lazy = [0]*(3 * n)
+ 
+        self.size = n - 1 
+    
+ 
+    def construct(self , a , l = 0 , h = -1 , i = 0):
+        if(h == -1):
+            h = self.size
+ 
+        if(l > h):
+            return
+ 
+        if(l == h):
+            self.st[i] = a[l]
+            return self.st[i]
+ 
+        mid = (l + h)//2
+ 
+        left = self.construct(a , l ,mid , 2*i + 1)
+        right = self.construct(a , mid + 1 , h , 2*i + 2)
+ 
+        self.st[i] = left + right
+        return self.st[i]
+    
+ 
+    def update(self , x , y , value ,l = 0, h = -1, i = 0):
+        if(h == -1):
+            h = self.size
+ 
+        if(l >= x and h <= y):self.lazy[i] += value
+ 
+        if(self.lazy[i]):
+ 
+            self.st[i] += self.lazy[i]
+ 
+            if(l != h):
+                 self.lazy[2*i + 1] += self.lazy[i]
+                 self.lazy[2*i + 2] += self.lazy[i]
+ 
+            self.lazy[i] = 0
+ 
+        if(l >= x and h <= y):return self.st[i]
+    
+        if(l > y or h < x):return self.st[i]
+ 
+ 
+        mid = (l + h)//2
+ 
+        left = self.update(x , y , value ,l , mid, 2*i + 1)
+        right = self.update(x , y , value ,mid + 1 , h , 2*i + 2)
+ 
+        self.st[i] = min(left , right)
+        return min(left , right)
+ 
+ 
+    def query(self , x , y ,l = 0 , h = -1 , i = 0):
+        if(h == -1):
+            h = self.size
+ 
+        if(self.lazy[i]):
+            self.st[i] += self.lazy[i]
+ 
+            if(l != h):
+                self.lazy[2*i + 1] += self.lazy[i]
+                self.lazy[2*i + 2] += self.lazy[i]
+ 
+            self.lazy[i] = 0
+ 
+        if(l >= x and h <= y):return self.st[i]
+ 
+        if(l > y or h < x):return 1e9
+   
+        mid = (l + h)//2
+ 
+        left = self.query(x , y ,l , mid , 2*i + 1)
+        right = self.query(x,  y , mid + 1 , h , 2*i + 2)
+ 
+        return min(left , right)
+    
+
+def answer():
+
+
+ 
+ 
+for T in range(int(input())):
+    
+
+    print(answer())

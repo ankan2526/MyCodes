@@ -1,0 +1,135 @@
+class MaxFlow:
+    _INF = 9_223_372_036_854_775_807
+ 
+    def __init__(self, n=0):
+        self._n = n
+        self._pos = []
+        self._g = [[] for _ in range(n)]  # [to, rev, cap]
+ 
+    def add_edge(self, from_, to, cap):
+        assert 0 <= from_ < self._n
+        assert 0 <= to < self._n
+        assert 0 <= cap
+        m = len(self._pos)
+        from_id = len(self._g[from_])
+        self._pos.append([from_, from_id])
+        to_id = len(self._g[to])
+        if from_ == to:
+            to_id += 1
+        self._g[from_].append([to, to_id, cap])
+        self._g[to].append([from_, from_id, 0])
+        return m
+ 
+    def get_edge(self, i):
+        m = len(self._pos)
+        assert 0 <= i < m
+        _e = self._g[self._pos[i][0]][self._pos[i][1]]
+        _re = self._g[_e[0]][_e[1]]
+        return [self._pos[i][0], _e[0], _e[2] + _re[2], _re[2]] # from, to, cap, flow
+ 
+    def edges(self):
+        m = len(self._pos)
+        result = [self.get_edge(i) for i in range(m)]
+        return result
+ 
+    def change_edge(self, i, new_cap, new_flow):
+        m = len(self._pos)
+        assert 0 <= i < m
+        assert 0 <= new_flow <= new_cap
+        _e = self._g[self._pos[i][0]][self._pos[i][1]]
+        _re = self._g[_e[0]][_e[1]]
+        _e[2] = new_cap - new_flow
+        _re[2] = new_flow
+ 
+    def _flow_bfs(self, s, t):
+        level = [-1] * self._n
+        level[s] = 0
+        que = [s]
+        while que:
+            next_que = []
+            for v in que:
+                for to, rev, cap in self._g[v]:
+                    if cap == 0 or level[to] >= 0:
+                        continue
+                    level[to] = level[v] + 1
+                    if to == t:
+                        return level
+                    next_que.append(to)
+            que, next_que = next_que, que
+        return level
+ 
+    def flow(self, s, t, flow_limit=_INF):
+        assert 0 <= s < self._n
+        assert 0 <= t < self._n
+        assert s != t
+ 
+        flow = 0
+        while flow < flow_limit:
+            level = self._flow_bfs(s, t)
+            if level[t] == -1:
+                break
+ 
+            iterator = [0] * self._n
+            in_ = [0] * self._n
+            out = [0] * self._n
+ 
+            in_[t] = flow_limit - flow
+            route = [t]
+            while route:
+                v = route[-1]
+                if in_[v] == out[v] and v == t:
+                    flow += out[t]
+                    return flow
+                if v == s or in_[v] == out[v]:
+                    route.pop()
+                    w = route[-1]
+                    flow_vw = in_[v]
+                    i = iterator[w]
+                    to, rev, cap = self._g[w][i]
+                    self._g[v][rev][2] -= flow_vw
+                    self._g[w][i][2] += flow_vw
+                    out[w] += flow_vw
+                    continue
+ 
+                for i in range(iterator[v], len(self._g[v])):
+                    to, rev, cap = self._g[v][i]
+                    if(level[to] == -1
+                       or level[v] <= level[to]
+                       or self._g[to][rev][2] == 0):
+                        continue
+                    in_[to] = min(in_[v]-out[v], self._g[to][rev][2])
+                    out[to] = 0
+                    route.append(to)
+                    iterator[v] = i
+                    break
+                else:
+                    iterator[v] = len(self._g[v])
+                    route.pop()
+                    if v == t:
+                        if out[t] == 0:
+                            return flow
+                        flow += out[t]
+                        continue
+                    w = route[-1]
+                    flow_vw = out[v]
+                    i = iterator[w]
+                    to, rev, cap = self._g[w][i]
+                    self._g[v][rev][2] -= flow_vw
+                    self._g[w][i][2] += flow_vw
+                    out[w] += flow_vw
+                    iterator[w] += 1
+        return flow
+ 
+    def min_cut(self, s):
+        visited = [False] * self._n
+        visited[s] = True
+        que = [s]
+        while que:
+            next_que = []
+            for p in que:
+                for to, rev, cap in self._g[p]:
+                    if cap > 0 and not visited[to]:
+                        visited[to] = True
+                        next_que.append(to)
+            que, next_que = next_que, que
+        return visited

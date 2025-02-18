@@ -1,0 +1,34 @@
+class StringHash:
+    def __init__(self, s = "", p = 53, mod = 101107157131, function = lambda a: ord(a)-96):
+        self.s = s
+        self.n = len(s)
+        self.p = p
+        self.mod = mod
+        self.function = function
+        self.prefHash = [0] * (self.n + 1)
+        self.suffHash = [0] * (self.n + 1)
+        self.powP = [1]
+        self.invP = [1]
+
+        for i in range(self.n):
+            self.powP.append((self.powP[-1] * p) % mod)
+            self.invP.append(pow(self.powP[-1], mod-2, mod))
+
+        for i in range(self.n):
+            self.prefHash[i+1] = (self.prefHash[i] + function(s[i]) * self.powP[i]) % mod
+            self.suffHash[self.n - i - 1] = (self.suffHash[self.n - i] + function(s[self.n - i - 1]) * self.powP[i]) % mod
+        
+    
+    def substringHash(self, left, right):
+        return ((self.prefHash[right + 1] - self.prefHash[left]) * self.invP[left]) % self.mod
+    
+    def reverseSubstringHash(self, left, right):
+        return ((self.suffHash[left] - self.suffHash[right + 1]) * self.invP[self.n - right - 1]) % self.mod
+    
+    def getHash(self, a):
+        h = 0
+        p = 1
+        for i in a:
+            h = (h + self.function(i) * p) % self.mod
+            p = (p * self.p) % self.mod
+        return h

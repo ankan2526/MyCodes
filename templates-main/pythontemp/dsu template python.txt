@@ -1,0 +1,43 @@
+from sys import stdin
+input = stdin.readline
+
+
+class dsu:
+
+    def __init__(self , n):
+
+        self.p = [0]*(n + 1)
+        self.rank = [1]*(n + 1)
+
+        for i in range(1 , n + 1):
+            self.p[i] = i
+
+    def find(self , node):
+        if(self.p[node] == node):return node
+
+        self.p[node] = self.find(self.p[node])
+        return self.p[node]
+
+    def union(self , u , v):
+        u , v = self.find(u) , self.find(v)
+
+        if(self.rank[u] == self.rank[v]):
+            self.p[v] = u
+            self.rank[u] += 1
+
+        elif(self.rank[u] > self.rank[v]):
+            self.p[v] = u
+
+        else:
+            self.p[u] = v
+            
+
+def answer():
+
+
+
+
+for T in range(int(input())):
+
+
+    print(answer())
