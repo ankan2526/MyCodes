@@ -3,7 +3,12 @@ int INF = 1000000007;
 int hungarian(int n, int m, vector<vector<int>> &A){
     // Given the cost matrix "vector<vector<int>> A {...};"
     // Find the maximum matching "vector<pair<int,int>>result;" with all pairs
-    // As well as total cost "int C;" with the minimum assignment cost.
+    // As well as total cost "int C;" with the maximum assignment cost.
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            A[i][j] *= -1;
+        }
+    }
     vector<int> u (n+1), v (m+1), p (m+1), way (m+1);
     for (int i=1; i<=n; ++i) {
         p[0] = i;
@@ -42,6 +47,6 @@ int hungarian(int n, int m, vector<vector<int>> &A){
         result.push_back(make_pair(p[i], i));
     }
     
-    int C = -v[0];
+    int C = v[0];
     return C;
 }
