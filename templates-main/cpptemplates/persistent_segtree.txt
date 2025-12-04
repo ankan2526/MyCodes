@@ -1,0 +1,86 @@
+#include <bits/stdc++.h>
+using namespace std;
+ 
+struct Node {
+    long long val;
+    Node *left, *right;
+    Node(long long v = 0, Node* l = nullptr, Node* r = nullptr) :
+        val(v), left(l), right(r) {}
+};
+ 
+long long combine(long long a, long long b) {
+    return a + b;
+}
+ 
+Node* build(int l, int r, vector<long long> &arr) {
+    if (l == r) return new Node(arr[l], nullptr, nullptr);
+    int mid = (l + r) >> 1;
+    Node* left = build(l, mid, arr);
+    Node* right = build(mid + 1, r, arr);
+    return new Node(combine(left->val, right->val), left, right);
+}
+ 
+// persistent point update → returns new root
+Node* update(Node* node, int l, int r, int idx, long long val) {
+    if (l == r) return new Node(val, nullptr, nullptr);
+    int mid = (l + r) >> 1;
+    if (idx <= mid) {
+        Node* newLeft = update(node->left, l, mid, idx, val);
+        return new Node(combine(newLeft->val, node->right->val), newLeft, node->right);
+    } else {
+        Node* newRight = update(node->right, mid + 1, r, idx, val);
+        return new Node(combine(node->left->val, newRight->val), node->left, newRight);
+    }
+}
+ 
+// range query
+long long query(Node* node, int l, int r, int ql, int qr) {
+    if (qr < l || ql > r) return 0;
+    if (ql <= l && r <= qr) return node->val;
+    int mid = (l + r) >> 1;
+    return combine(
+        query(node->left, l, mid, ql, qr),
+        query(node->right, mid + 1, r, ql, qr)
+    );
+}
+ 
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+ 
+    int n, q;
+    cin >> n >> q;
+    vector<long long> arr(n);
+    for (int i = 0; i < n; i++) cin >> arr[i];
+ 
+    vector<Node*> versions;
+    versions.reserve(q + 5);
+ 
+    Node* root = build(0, n - 1, arr);
+    versions.push_back(root);
+ 
+    while (q--) {
+        int type;
+        cin >> type;
+        if (type == 1) {
+            int k, a;
+            long long x;
+            cin >> k >> a >> x;
+            --k, --a;
+            versions[k] = update(versions[k], 0, n - 1, a, x);
+        }
+        else if (type == 2) {
+            int k, a, b;
+            cin >> k >> a >> b;
+            --k, --a, --b;
+            cout << query(versions[k], 0, n - 1, a, b) << "\n";
+        }
+        else {  // type 3
+            int k;
+            cin >> k;
+            --k;
+            versions.push_back(versions[k]); // just copy pointer
+        }
+    }
+    return 0;
+}

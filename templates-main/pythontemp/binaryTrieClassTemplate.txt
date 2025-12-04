@@ -66,3 +66,4 @@ class BinaryTrie:
                 u = v
                 res |= 1 << i
         return res
+
